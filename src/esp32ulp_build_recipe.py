@@ -128,7 +128,8 @@ def build_ulp(PATHS, ulp_sfiles, board_options, has_s_file):
         proc = subprocess.Popen(cmd[1],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,shell=False)
         (out, err) = proc.communicate()
         if err:
-            error_string = cmd[0] + '\r' + err
+            print("1")
+            error_string = cmd[0] + '\r' + err.decode('utf-8')
             sys.exit(error_string)
         else:
             console_string += cmd[0] + '\r'
@@ -138,17 +139,21 @@ def build_ulp(PATHS, ulp_sfiles, board_options, has_s_file):
         proc = subprocess.Popen(cmd[1],stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=False)
         (out, err) = proc.communicate()
         if err:
-            error_string = cmd[0] + '\r' + err
+            print("1")
+            error_string = cmd[0] + '\r' + err.decode('utf-8')
             sys.exit(error_string)
         else:
             console_string += cmd[0] + '\r'
 
     ## Run linker script template through C preprocessor
     cmd = gen_xtensa_ld_cmd(PATHS, ulp_sfiles, board_options)
+    print("---------------")
+    print(cmd)
     proc = subprocess.Popen(cmd[1],stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=False)
     (out, err) = proc.communicate()
     if err:
-        error_string = cmd[0] + '\r' + err
+        print("2")
+        error_string = cmd[0] + '\r' + err.decode('utf-8')
         sys.exit(error_string)
     else:
         console_string += cmd[0] + '\r'
@@ -158,7 +163,8 @@ def build_ulp(PATHS, ulp_sfiles, board_options, has_s_file):
     proc = subprocess.Popen(cmd[1],stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=False)
     (out, err) = proc.communicate()
     if err:
-        error_string = cmd[0] + '\r' + err
+        print("3")
+        error_string = cmd[0] + '\r' + err.decode('utf-8')
         sys.exit(error_string)
     else:
         console_string += cmd[0] + '\r'
@@ -168,7 +174,8 @@ def build_ulp(PATHS, ulp_sfiles, board_options, has_s_file):
     proc = subprocess.Popen(cmd[1],stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=False)
     (out, err) = proc.communicate()
     if err:
-        error_string = cmd[0] + '\r' + err
+        print("4")
+        error_string = cmd[0] + '\r' + err.decode('utf-8')
         sys.exit(error_string)
     else:
         try:
@@ -227,7 +234,8 @@ def build_ulp(PATHS, ulp_sfiles, board_options, has_s_file):
     proc = subprocess.Popen(cmd[1],stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=False)
     (out, err) = proc.communicate()
     if err:
-        error_string = cmd[0] + '\r' + err
+        print("5")
+        error_string = cmd[0] + '\r' + err.decode('utf-8')
         sys.exit(error_string)
     else:
         file_names_constant = gen_file_names_constant()
@@ -240,7 +248,8 @@ def build_ulp(PATHS, ulp_sfiles, board_options, has_s_file):
     proc = subprocess.Popen(cmd[1],stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=False)
     (out, err) = proc.communicate()
     if err:
-        error_string = cmd[0] + '\r' + err
+        print("6")
+        error_string = cmd[0] + '\r' + err.decode('utf-8')
         sys.exit(error_string)
     else:
         console_string += cmd[0] + '\r'
@@ -250,7 +259,8 @@ def build_ulp(PATHS, ulp_sfiles, board_options, has_s_file):
     proc = subprocess.Popen(cmd[1],stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=False)
     (out, err) = proc.communicate()
     if err:
-        error_string = cmd[0] + '\r' + err
+        print("7")
+        error_string = cmd[0] + '\r' + err.decode('utf-8')
         sys.exit(error_string)
     else:
         console_string += cmd[0] + '\r'
@@ -260,7 +270,8 @@ def build_ulp(PATHS, ulp_sfiles, board_options, has_s_file):
     proc = subprocess.Popen(cmd[1],stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=False)
     (out, err) = proc.communicate()
     if err:
-        error_string = cmd[0] + '\r' + err
+        print("8")
+        error_string = cmd[0] + '\r' + err.decode('utf-8')
         sys.exit(error_string)
     else:
         console_string += cmd[0] + '\r'
@@ -279,7 +290,8 @@ def build_ulp(PATHS, ulp_sfiles, board_options, has_s_file):
         proc = subprocess.Popen(cmd[1],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,shell=False)
         (out, err) = proc.communicate()
         if err:
-            error_string = cmd[0] + '\r' + err
+            print("9")
+            error_string = cmd[0] + '\r' + err.decode('utf-8')
             sys.exit(error_string)
         else:
             console_string += cmd[0] + '\r'
@@ -287,6 +299,7 @@ def build_ulp(PATHS, ulp_sfiles, board_options, has_s_file):
     ## print outputs or errors to the console
     candy = '*********************************************************************************\r'
     if has_s_file:
+        print("Output")
         print(console_string + candy + flash_msg + ram_msg + candy)
     return 0
 
@@ -311,7 +324,8 @@ def gen_assembly(PATHS):
         proc = subprocess.Popen(cmd[1],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,shell=False)
         (out, err) = proc.communicate()
         if err:
-            error_string = cmd[0] + '\r' + err
+            print("1")
+            error_string = cmd[0] + '\r' + err.decode('utf-8')
             sys.exit(error_string)
         else:
             if out == b"":
