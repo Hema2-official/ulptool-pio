@@ -372,8 +372,8 @@ def gen_xtensa_ld_preprocessor_cmd(PATHS):
     XTENSA_GCC_PREPROCESSOR.append(EXTRA_FLAGS['O'])
     XTENSA_GCC_PREPROCESSOR.append(os.path.join(PATHS['core'] , 'tools', 'sdk', 'esp32', 'ld', 'esp32_out.ld'))
     XTENSA_GCC_PREPROCESSOR.append(EXTRA_FLAGS['I'])
-    XTENSA_GCC_PREPROCESSOR.append(os.path.join(PATHS['core'] , 'tools', 'sdk', 'esp32', 'qspi_qspi', 'include', 'sdkconfig.h'))
-    XTENSA_GCC_PREPROCESSOR.append(os.path.join(PATHS['core'] , 'tools', 'sdk', 'esp32', 'ld', 'esp32.rom.ld'))
+    XTENSA_GCC_PREPROCESSOR.append(os.path.join(PATHS['core'] , 'tools', 'sdk', 'esp32', 'include'))
+    XTENSA_GCC_PREPROCESSOR.append(os.path.join(PATHS['core'] , 'tools', 'sdk', 'esp32', 'ld', 'esp32.ld'))
     STR_CMD = ' '.join(XTENSA_GCC_PREPROCESSOR)
     return STR_CMD, XTENSA_GCC_PREPROCESSOR
 
