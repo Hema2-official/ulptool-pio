@@ -297,6 +297,7 @@ def build_ulp(PATHS, ulp_sfiles, board_options, has_s_file):
             console_string += cmd[0] + '\r'
 
     ## print outputs or errors to the console
+    print("Output")
     candy = '*********************************************************************************\r'
     if has_s_file:
         print("Output")
@@ -441,7 +442,6 @@ def gen_xtensa_ld_cmd(PATHS, file, board_options):
     XTENSA_GCC_LD.append(EXTRA_FLAGS['D__ASSEMBLER__'])
     XTENSA_GCC_LD.append(os.path.join(PATHS['ulptool'], 'ld', 'esp32.ulp.ld'))
     STR_CMD = ' '.join(XTENSA_GCC_LD)
-    #STR_CMD = STR_CMD.replace("\\", "/")
     return STR_CMD, XTENSA_GCC_LD
 
 def gen_binutils_ld_cmd(PATHS, file):
