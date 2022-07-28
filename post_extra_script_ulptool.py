@@ -61,21 +61,23 @@ def run_ulptool():
         str(cpp_defines)
     cmd = cmd.split(";")
 
-    # print()
-    # for part in cmd:
-    #    print(part)
-    # print()
+    print()
+    for part in cmd:
+        print(part)
+    print()
 
     console_string = ''
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                            stderr=subprocess.STDOUT, shell=False)
+                            stderr=subprocess.PIPE, shell=False)
     (out, err) = proc.communicate()
+    print(out)
+    print(err)
     if err:
         error_string = cmd[0] + '\r' + err.decode('utf-8')
         sys.exit(error_string)
     else:
         console_string += cmd[0] + '\r'
-
+    
     if err:
         raise Exception("An error returned by ulptool.")
 
