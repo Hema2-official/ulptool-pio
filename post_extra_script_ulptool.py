@@ -61,10 +61,10 @@ def run_ulptool():
         str(cpp_defines)
     cmd = cmd.split(";")
 
-    print()
-    for part in cmd:
-        print(part)
-    print()
+    #print()
+    #for part in cmd:
+    #    print(part)
+    #print()
 
     console_string = ''
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,

@@ -1,4 +1,9 @@
 # ulptool-pio
+This is a fork of [likeablob/ulptool-pio][https://github.com/likeablob/ulptool-pio)
+
+Main Purpose is to update the Software to the latest versions (Python3 & ESP32 > 3.5.0)
+
+## Original Text
 
 This is a fork of [duff2013/ulptool](https://github.com/duff2013/ulptool), with a thin and ugly wrapper for PlatformIO.
 
@@ -12,7 +17,7 @@ PRs are welcome.
 To use this wrapper in your PIO project, first add the following lines into your `platformio.ini`.
 ```ini
 lib_deps =
-  https://github.com/likeablob/ulptool-pio
+  https://github.com/powelllens/ulptool-pio/
 
 extra_scripts =
   pre:/$PROJECT_LIBDEPS_DIR/$PIOENV/ulptool-pio/pre_extra_script_ulptool.py
