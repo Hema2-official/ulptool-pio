@@ -7,6 +7,8 @@
 
 from optparse import OptionParser
 
+from cv2 import add
+
 BASE_ADDR = 0x50000000
 
 
@@ -19,10 +21,12 @@ def gen_ld_h_from_sym(f_sym, f_ld, f_h):
     f_h.write("#pragma once\n\n")
 
     for line in f_sym:
-        name, _, addr_str = line.split()
-        addr = int(addr_str, 16) + BASE_ADDR
-        f_h.write("extern uint32_t ulp_{0};\n".format(name))
-        f_ld.write("PROVIDE ( ulp_{0} = 0x{1:08x} );\n".format(name, addr))
+        line = str(line).split()
+        if len(line) > 2: # Bugfix, avoid empty lines
+            name, _, addr_str = line
+            addr = int(addr_str, 16) + BASE_ADDR
+            f_h.write("extern uint32_t ulp_{0};\n".format(name))
+            f_ld.write("PROVIDE ( ulp_{0} = 0x{1:08x} );\n".format(name, addr))
 
 
 def main():
@@ -45,7 +49,7 @@ def main():
         parser.print_help()
         return 1
 
-    with open(options.outputfile + ".h", 'w') as f_h, open(options.outputfile + ".ld", 'w') as f_ld, open(options.symfile) as f_sym:
+    with open(options.outputfile + ".h", 'w') as f_h, open(options.outputfile + ".ld", 'w') as f_ld, open(options.symfile,encoding='utf-8') as f_sym:
         gen_ld_h_from_sym(f_sym, f_ld, f_h)
     return 0
 

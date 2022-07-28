@@ -1,8 +1,10 @@
 # Copyright (c) likeablob
 # SPDX-License-Identifier: MIT
 from pathlib import Path, PurePath
+import shutil
 import subprocess
 import sys
+import os
 from SCons.Script import COMMAND_LINE_TARGETS, Import
 
 Import("env", "projenv")
@@ -22,14 +24,15 @@ def run_ulptool():
 
     framework_dir = platform.get_package_dir("framework-arduinoespressif32")
     toolchain_ulp_dir = platform.get_package_dir("toolchain-esp32ulp")
-    toolchain_xtensa_dir = platform.get_package_dir("toolchain-xtensa32")
+    toolchain_xtensa_dir = platform.get_package_dir("toolchain-xtensa-esp32")
 
     cpp_defines = ""
     for raw in env["CPPDEFINES"]:
         k = None
         if type(raw) is tuple:
             k, v = raw
-            v = v if type(v) is not str else v.replace(" ", r"\ ")
+            v = v if type(v) is not str else v  # .replace(" ", r"\ ")
+            v = str(v).replace("\\", "")
             flag = f"--D{k}={v};"
         else:
             k = raw
@@ -56,13 +59,13 @@ def run_ulptool():
         "-x"+str(toolchain_xtensa_dir).replace("\\", "/")+"/bin;" + \
         "-t"+str(ulptool_dir).replace("\\", "/")+"/src/;" + \
         str(cpp_defines)
-
-    print()
     cmd = cmd.split(";")
-    for part in cmd:
-        print(part)
-    print()
-    #print("Run Process")
+
+    # print()
+    # for part in cmd:
+    #    print(part)
+    # print()
+
     console_string = ''
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                             stderr=subprocess.STDOUT, shell=False)
@@ -73,10 +76,7 @@ def run_ulptool():
     else:
         console_string += cmd[0] + '\r'
 
-    print("end of process")
-    print(out)
-
-    if proc:
+    if err:
         raise Exception("An error returned by ulptool.")
 
 

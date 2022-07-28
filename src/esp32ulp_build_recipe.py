@@ -128,7 +128,7 @@ def build_ulp(PATHS, ulp_sfiles, board_options, has_s_file):
         proc = subprocess.Popen(cmd[1],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,shell=False)
         (out, err) = proc.communicate()
         if err:
-            print("1")
+            print("0")
             error_string = cmd[0] + '\r' + err.decode('utf-8')
             sys.exit(error_string)
         else:
@@ -147,8 +147,6 @@ def build_ulp(PATHS, ulp_sfiles, board_options, has_s_file):
 
     ## Run linker script template through C preprocessor
     cmd = gen_xtensa_ld_cmd(PATHS, ulp_sfiles, board_options)
-    print("---------------")
-    print(cmd)
     proc = subprocess.Popen(cmd[1],stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=False)
     (out, err) = proc.communicate()
     if err:
@@ -247,6 +245,8 @@ def build_ulp(PATHS, ulp_sfiles, board_options, has_s_file):
     cmd = gen_mapgen_cmd(PATHS)
     proc = subprocess.Popen(cmd[1],stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=False)
     (out, err) = proc.communicate()
+    print(out)
+    print(err)
     if err:
         print("6")
         error_string = cmd[0] + '\r' + err.decode('utf-8')
@@ -324,7 +324,7 @@ def gen_assembly(PATHS):
         proc = subprocess.Popen(cmd[1],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,shell=False)
         (out, err) = proc.communicate()
         if err:
-            print("1")
+            print("10")
             error_string = cmd[0] + '\r' + err.decode('utf-8')
             sys.exit(error_string)
         else:
@@ -441,6 +441,7 @@ def gen_xtensa_ld_cmd(PATHS, file, board_options):
     XTENSA_GCC_LD.append(EXTRA_FLAGS['D__ASSEMBLER__'])
     XTENSA_GCC_LD.append(os.path.join(PATHS['ulptool'], 'ld', 'esp32.ulp.ld'))
     STR_CMD = ' '.join(XTENSA_GCC_LD)
+    #STR_CMD = STR_CMD.replace("\\", "/")
     return STR_CMD, XTENSA_GCC_LD
 
 def gen_binutils_ld_cmd(PATHS, file):
