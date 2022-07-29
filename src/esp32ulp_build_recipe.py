@@ -176,8 +176,8 @@ def build_ulp(PATHS, ulp_sfiles, board_options, has_s_file):
         error_string = cmd[0] + '\r' + err.decode('utf-8')
         sys.exit(error_string)
     else:
-        try:               
-            file_path = os.path.join(PATHS['core'] , 'tools', 'sdk', 'esp32', 'qspi_qspi', 'include', 'sdkconfig.h')#os.path.join(PATHS['core'], 'tools', 'sdk', 'include', 'config', 'sdkconfig.h' )
+        try:
+            file_path = os.path.join(PATHS['core'], 'tools', 'sdk', 'include', 'config', 'sdkconfig.h' )
             with open(file_path, "r",encoding=('UTF-8')) as file: text = file.read()
             mem = re.findall(str('_ULP_COPROC_RESERVE_MEM (.+[0-9a-zA-Z_])'), text)
             SECTIONS = dict(re.findall('^(\.+[0-9a-zA-Z_]+)\s+([0-9]+)', str(out), re.MULTILINE)) #This Line is still buggy / none functional but not relevant for testing
@@ -246,8 +246,6 @@ def build_ulp(PATHS, ulp_sfiles, board_options, has_s_file):
     cmd = gen_mapgen_cmd(PATHS)
     proc = subprocess.Popen(cmd[1],stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=False)
     (out, err) = proc.communicate()
-    print(out)
-    print(err)
     if err:
         print("6")
         error_string = cmd[0] + '\r' + err.decode('utf-8')
@@ -278,7 +276,7 @@ def build_ulp(PATHS, ulp_sfiles, board_options, has_s_file):
         console_string += cmd[0] + '\r'
 
     ## Check if sdkconfig.h md5 hash has changed indicating the file has changed
-    sdk_hash = md5(os.path.join(PATHS['core'] , 'tools', 'sdk', 'esp32', 'qspi_qspi', 'include', 'sdkconfig.h'))
+    sdk_hash = md5(os.path.join(PATHS['core'] , 'tools', 'sdk', 'include', 'config', 'sdkconfig.h'))
     dict_hash = dict()
     with open(os.path.join(PATHS['ulptool'], 'hash.json'), 'r') as file:
         dict_hash = json.load(file)
@@ -301,7 +299,6 @@ def build_ulp(PATHS, ulp_sfiles, board_options, has_s_file):
     ## print outputs or errors to the console
     candy = '*********************************************************************************\r'
     if has_s_file:
-        print("Output")
         print(console_string + candy + flash_msg + ram_msg + candy)
     return 0
 
@@ -337,8 +334,8 @@ def gen_assembly(PATHS):
 
 
 def gen_lcc_cmd(PATHS, file):
-    soc_path     = os.path.join(PATHS['core'], 'tools', 'sdk', 'esp32', 'include', 'soc', 'esp32', 'include', 'soc')    #\tools\sdk\esp32\include\soc\esp32\include\soc
-    include_path = os.path.join(PATHS['core'], 'tools', 'sdk', 'esp32', 'include', 'soc', 'include', 'soc')           #\tools\sdk\esp32\include\soc\include\soc
+    soc_path     = os.path.join(PATHS['core'], 'tools', 'sdk', 'include', 'soc', 'soc')
+    include_path = os.path.join(PATHS['core'], 'tools', 'sdk', 'include', 'soc')
     header_path  = os.path.join(PATHS['ulptool'], 'ulpcc', 'include')
     if platform.system() == 'Darwin':
         lcc_path = os.path.join(PATHS['ulptool'], 'ulpcc', 'bin', 'darwin')
@@ -370,10 +367,10 @@ def gen_xtensa_ld_preprocessor_cmd(PATHS):
     XTENSA_GCC_PREPROCESSOR.append(EXTRA_FLAGS['C'])
     XTENSA_GCC_PREPROCESSOR.append(EXTRA_FLAGS['XC'])
     XTENSA_GCC_PREPROCESSOR.append(EXTRA_FLAGS['O'])
-    XTENSA_GCC_PREPROCESSOR.append(os.path.join(PATHS['core'] , 'tools', 'sdk', 'esp32', 'ld', 'esp32_out.ld'))
+    XTENSA_GCC_PREPROCESSOR.append(os.path.join(PATHS['core'] , 'tools', 'sdk', 'ld', 'esp32_out.ld'))
     XTENSA_GCC_PREPROCESSOR.append(EXTRA_FLAGS['I'])
-    XTENSA_GCC_PREPROCESSOR.append(os.path.join(PATHS['core'] , 'tools', 'sdk', 'esp32', 'include'))
-    XTENSA_GCC_PREPROCESSOR.append(os.path.join(PATHS['core'] , 'tools', 'sdk', 'esp32', 'ld', 'esp32.ld'))
+    XTENSA_GCC_PREPROCESSOR.append(os.path.join(PATHS['core'] , 'tools', 'sdk', 'include', 'config'))
+    XTENSA_GCC_PREPROCESSOR.append(os.path.join(PATHS['core'] , 'tools', 'sdk', 'ld', 'esp32.ld'))
     STR_CMD = ' '.join(XTENSA_GCC_PREPROCESSOR)
     return STR_CMD, XTENSA_GCC_PREPROCESSOR
 

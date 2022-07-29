@@ -1,7 +1,6 @@
 # Copyright (c) likeablob
 # SPDX-License-Identifier: MIT
-from pathlib import Path, PurePath
-import shutil
+from pathlib import Path
 import subprocess
 import sys
 import os
@@ -24,7 +23,7 @@ def run_ulptool():
 
     framework_dir = platform.get_package_dir("framework-arduinoespressif32")
     toolchain_ulp_dir = platform.get_package_dir("toolchain-esp32ulp")
-    toolchain_xtensa_dir = platform.get_package_dir("toolchain-xtensa-esp32")
+    toolchain_xtensa_dir = platform.get_package_dir("toolchain-xtensa32")
 
     cpp_defines = ""
     for raw in env["CPPDEFINES"]:
