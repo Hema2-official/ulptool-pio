@@ -1,5 +1,8 @@
 # Copyright (c) likeablob
 # SPDX-License-Identifier: MIT
+import os
+import subprocess
+import sys
 from pathlib import Path
 
 from SCons.Script import COMMAND_LINE_TARGETS, Import
@@ -28,29 +31,54 @@ def run_ulptool():
         k = None
         if type(raw) is tuple:
             k, v = raw
-            v = v if type(v) is not str else v.replace(" ", r"\ ")
-            flag = f"--D{k}={v} "
+            v = v if type(v) is not str else v  # .replace(" ", r"\ ")
+            v = str(v).replace("\\", "")
+            flag = f"--D{k}={v};"
         else:
             k = raw
-            flag = f"--D{k} "
+            flag = f"--D{k};"
 
         if k.startswith("ARDUINO"):
             cpp_defines += flag
 
-    # TODO: Rewrite with process.run()
-    res = env.Execute(
-        f"""$PYTHONEXE \
-         {ulptool_dir}/src/esp32ulp_build_recipe.py \
-         $_CPPINCFLAGS \
-        -b {project_dir} \
-        -p {framework_dir} \
-        -u {toolchain_ulp_dir}/bin \
-        -x {toolchain_xtensa_dir}/bin \
-        -t {ulptool_dir}/src/ \
-        {cpp_defines}
-    """
-    )
-    if res:
+    cpp_inc_flags = ""
+    prefix = env["INCPREFIX"]
+    suffix = env["INCSUFFIX"]
+
+    for dir in env["CPPPATH"]:
+        path = Path(dir)
+        flag = prefix+str(path).replace("\\", "/")+suffix+";"
+        cpp_inc_flags += flag
+
+    cmd = str(env["PYTHONEXE"]).replace("\\", "/") + ";" + \
+        str(ulptool_dir).replace("\\", "/")+"/src/esp32ulp_build_recipe.py;" + \
+        cpp_inc_flags + \
+        "-b"+str(project_dir).replace("\\", "/") + ";" + \
+        "-p"+str(framework_dir).replace("\\", "/") + ";" + \
+        "-u"+str(toolchain_ulp_dir).replace("\\", "/")+"/bin;" + \
+        "-x"+str(toolchain_xtensa_dir).replace("\\", "/")+"/bin;" + \
+        "-t"+str(ulptool_dir).replace("\\", "/")+"/src/;" + \
+        str(cpp_defines)
+    cmd = cmd.split(";")
+
+    #print()
+    #for part in cmd:
+    #    print(part)
+    #print()
+
+    console_string = ''
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE, shell=False)
+    (out, err) = proc.communicate()
+    print(out)
+    print(err)
+    if err:
+        error_string = cmd[0] + '\r' + err.decode('utf-8')
+        sys.exit(error_string)
+    else:
+        console_string += cmd[0] + '\r'
+    
+    if err:
         raise Exception("An error returned by ulptool.")
 
 

@@ -16,16 +16,17 @@
 #   OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #   DEALINGS IN THE SOFTWARE.
 
+import argparse
+import glob
+import hashlib
+import json
+
 # version 2.4.1
 import os
-import re
-import sys
-import glob
-import json
-import hashlib
 import platform
-import argparse
+import re
 import subprocess
+import sys
 import traceback
 
 CPREPROCESSOR_FLAGS = []
@@ -128,7 +129,8 @@ def build_ulp(PATHS, ulp_sfiles, board_options, has_s_file):
         proc = subprocess.Popen(cmd[1],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,shell=False)
         (out, err) = proc.communicate()
         if err:
-            error_string = cmd[0] + '\r' + err
+            print("0")
+            error_string = cmd[0] + '\r' + err.decode('utf-8')
             sys.exit(error_string)
         else:
             console_string += cmd[0] + '\r'
@@ -138,7 +140,8 @@ def build_ulp(PATHS, ulp_sfiles, board_options, has_s_file):
         proc = subprocess.Popen(cmd[1],stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=False)
         (out, err) = proc.communicate()
         if err:
-            error_string = cmd[0] + '\r' + err
+            print("1")
+            error_string = cmd[0] + '\r' + err.decode('utf-8')
             sys.exit(error_string)
         else:
             console_string += cmd[0] + '\r'
@@ -148,7 +151,8 @@ def build_ulp(PATHS, ulp_sfiles, board_options, has_s_file):
     proc = subprocess.Popen(cmd[1],stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=False)
     (out, err) = proc.communicate()
     if err:
-        error_string = cmd[0] + '\r' + err
+        print("2")
+        error_string = cmd[0] + '\r' + err.decode('utf-8')
         sys.exit(error_string)
     else:
         console_string += cmd[0] + '\r'
@@ -158,7 +162,8 @@ def build_ulp(PATHS, ulp_sfiles, board_options, has_s_file):
     proc = subprocess.Popen(cmd[1],stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=False)
     (out, err) = proc.communicate()
     if err:
-        error_string = cmd[0] + '\r' + err
+        print("3")
+        error_string = cmd[0] + '\r' + err.decode('utf-8')
         sys.exit(error_string)
     else:
         console_string += cmd[0] + '\r'
@@ -168,15 +173,15 @@ def build_ulp(PATHS, ulp_sfiles, board_options, has_s_file):
     proc = subprocess.Popen(cmd[1],stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=False)
     (out, err) = proc.communicate()
     if err:
-        error_string = cmd[0] + '\r' + err
+        print("4")
+        error_string = cmd[0] + '\r' + err.decode('utf-8')
         sys.exit(error_string)
     else:
-        try:
-            file_path = os.path.join(PATHS['core'], 'tools', 'sdk', 'include', 'config', 'sdkconfig.h' )
-            with open(file_path, "r") as file: text = file.read()
-
-            mem = re.findall(r'#define CONFIG_ULP_COPROC_RESERVE_MEM (.*?)\n', text)[0]
-            SECTIONS = dict(re.findall('^(\.+[0-9a-zA-Z_]+)\s+([0-9]+)', out, re.MULTILINE))
+        try:               
+            file_path = os.path.join(PATHS['core'] , 'tools', 'sdk', 'esp32', 'qspi_qspi', 'include', 'sdkconfig.h')#os.path.join(PATHS['core'], 'tools', 'sdk', 'include', 'config', 'sdkconfig.h' )
+            with open(file_path, "r",encoding=('UTF-8')) as file: text = file.read()
+            mem = re.findall(str('_ULP_COPROC_RESERVE_MEM (.+[0-9a-zA-Z_])'), text)
+            SECTIONS = dict(re.findall('^(\.+[0-9a-zA-Z_]+)\s+([0-9]+)', str(out), re.MULTILINE)) #This Line is still buggy / none functional but not relevant for testing
             max    = 0.0
             text   = 0.0
             data   = 0.0
@@ -187,9 +192,11 @@ def build_ulp(PATHS, ulp_sfiles, board_options, has_s_file):
             flash_precent = 0.0
             ram_precent   = 0.0
 
-            try: max = float(mem)
-            except Exception: pass
-
+            for v in mem:
+                try:
+                    max = float(v)
+                except Exception: pass
+            
             try: text = float(SECTIONS['.text'])
             except Exception: pass
 
@@ -227,7 +234,8 @@ def build_ulp(PATHS, ulp_sfiles, board_options, has_s_file):
     proc = subprocess.Popen(cmd[1],stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=False)
     (out, err) = proc.communicate()
     if err:
-        error_string = cmd[0] + '\r' + err
+        print("5")
+        error_string = cmd[0] + '\r' + err.decode('utf-8')
         sys.exit(error_string)
     else:
         file_names_constant = gen_file_names_constant()
@@ -239,8 +247,11 @@ def build_ulp(PATHS, ulp_sfiles, board_options, has_s_file):
     cmd = gen_mapgen_cmd(PATHS)
     proc = subprocess.Popen(cmd[1],stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=False)
     (out, err) = proc.communicate()
+    print(out)
+    print(err)
     if err:
-        error_string = cmd[0] + '\r' + err
+        print("6")
+        error_string = cmd[0] + '\r' + err.decode('utf-8')
         sys.exit(error_string)
     else:
         console_string += cmd[0] + '\r'
@@ -250,7 +261,8 @@ def build_ulp(PATHS, ulp_sfiles, board_options, has_s_file):
     proc = subprocess.Popen(cmd[1],stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=False)
     (out, err) = proc.communicate()
     if err:
-        error_string = cmd[0] + '\r' + err
+        print("7")
+        error_string = cmd[0] + '\r' + err.decode('utf-8')
         sys.exit(error_string)
     else:
         console_string += cmd[0] + '\r'
@@ -260,13 +272,14 @@ def build_ulp(PATHS, ulp_sfiles, board_options, has_s_file):
     proc = subprocess.Popen(cmd[1],stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=False)
     (out, err) = proc.communicate()
     if err:
-        error_string = cmd[0] + '\r' + err
+        print("8")
+        error_string = cmd[0] + '\r' + err.decode('utf-8')
         sys.exit(error_string)
     else:
         console_string += cmd[0] + '\r'
 
     ## Check if sdkconfig.h md5 hash has changed indicating the file has changed
-    sdk_hash = md5(os.path.join(PATHS['core'] , 'tools', 'sdk', 'include', 'config', 'sdkconfig.h'))
+    sdk_hash = md5(os.path.join(PATHS['core'] , 'tools', 'sdk', 'esp32', 'qspi_qspi', 'include', 'sdkconfig.h'))
     dict_hash = dict()
     with open(os.path.join(PATHS['ulptool'], 'hash.json'), 'r') as file:
         dict_hash = json.load(file)
@@ -276,10 +289,12 @@ def build_ulp(PATHS, ulp_sfiles, board_options, has_s_file):
             file.write(json.dumps(dict_hash))
         ## Run esp32.ld thru the c preprocessor generating esp32_out.ld
         cmd = gen_xtensa_ld_preprocessor_cmd(PATHS)
-        proc = subprocess.Popen(cmd[1],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,shell=False)
+        print(cmd[1])
+        proc = subprocess.Popen(cmd[1],stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=False)
         (out, err) = proc.communicate()
         if err:
-            error_string = cmd[0] + '\r' + err
+            print("9")
+            error_string = cmd[0] + '\r' + err.decode('utf-8')
             sys.exit(error_string)
         else:
             console_string += cmd[0] + '\r'
@@ -287,6 +302,7 @@ def build_ulp(PATHS, ulp_sfiles, board_options, has_s_file):
     ## print outputs or errors to the console
     candy = '*********************************************************************************\r'
     if has_s_file:
+        print("Output")
         print(console_string + candy + flash_msg + ram_msg + candy)
     return 0
 
@@ -311,7 +327,8 @@ def gen_assembly(PATHS):
         proc = subprocess.Popen(cmd[1],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,shell=False)
         (out, err) = proc.communicate()
         if err:
-            error_string = cmd[0] + '\r' + err
+            print("10")
+            error_string = cmd[0] + '\r' + err.decode('utf-8')
             sys.exit(error_string)
         else:
             if out == b"":
@@ -321,8 +338,8 @@ def gen_assembly(PATHS):
 
 
 def gen_lcc_cmd(PATHS, file):
-    soc_path     = os.path.join(PATHS['core'], 'tools', 'sdk', 'include', 'soc', 'soc')
-    include_path = os.path.join(PATHS['core'], 'tools', 'sdk', 'include', 'soc')
+    soc_path     = os.path.join(PATHS['core'], 'tools', 'sdk', 'esp32', 'include', 'soc', 'esp32', 'include', 'soc')    #\tools\sdk\esp32\include\soc\esp32\include\soc
+    include_path = os.path.join(PATHS['core'], 'tools', 'sdk', 'esp32', 'include', 'soc', 'include', 'soc')           #\tools\sdk\esp32\include\soc\include\soc
     header_path  = os.path.join(PATHS['ulptool'], 'ulpcc', 'include')
     if platform.system() == 'Darwin':
         lcc_path = os.path.join(PATHS['ulptool'], 'ulpcc', 'bin', 'darwin')
@@ -354,10 +371,10 @@ def gen_xtensa_ld_preprocessor_cmd(PATHS):
     XTENSA_GCC_PREPROCESSOR.append(EXTRA_FLAGS['C'])
     XTENSA_GCC_PREPROCESSOR.append(EXTRA_FLAGS['XC'])
     XTENSA_GCC_PREPROCESSOR.append(EXTRA_FLAGS['O'])
-    XTENSA_GCC_PREPROCESSOR.append(os.path.join(PATHS['core'] , 'tools', 'sdk', 'ld', 'esp32_out.ld'))
+    XTENSA_GCC_PREPROCESSOR.append(os.path.join(PATHS['core'] , 'tools', 'sdk', 'esp32', 'ld', 'esp32_out.ld'))
     XTENSA_GCC_PREPROCESSOR.append(EXTRA_FLAGS['I'])
-    XTENSA_GCC_PREPROCESSOR.append(os.path.join(PATHS['core'] , 'tools', 'sdk', 'include', 'config'))
-    XTENSA_GCC_PREPROCESSOR.append(os.path.join(PATHS['core'] , 'tools', 'sdk', 'ld', 'esp32.ld'))
+    XTENSA_GCC_PREPROCESSOR.append(os.path.join(PATHS['core'] , 'tools', 'sdk', 'esp32', 'include', 'config'))
+    XTENSA_GCC_PREPROCESSOR.append(os.path.join(PATHS['core'] , 'tools', 'sdk', 'esp32', 'ld', 'esp32.ld'))
     STR_CMD = ' '.join(XTENSA_GCC_PREPROCESSOR)
     return STR_CMD, XTENSA_GCC_PREPROCESSOR
 
