@@ -16,16 +16,17 @@
 #   OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #   DEALINGS IN THE SOFTWARE.
 
+import argparse
+import glob
+import hashlib
+import json
+
 # version 2.4.1
 import os
-import re
-import sys
-import glob
-import json
-import hashlib
 import platform
-import argparse
+import re
 import subprocess
+import sys
 import traceback
 
 CPREPROCESSOR_FLAGS = []
@@ -337,12 +338,14 @@ def gen_lcc_cmd(PATHS, file):
     soc_path     = os.path.join(PATHS['core'], 'tools', 'sdk', 'include', 'soc', 'soc')
     include_path = os.path.join(PATHS['core'], 'tools', 'sdk', 'include', 'soc')
     header_path  = os.path.join(PATHS['ulptool'], 'ulpcc', 'include')
-    if platform.system() == 'Darwin':
-        lcc_path = os.path.join(PATHS['ulptool'], 'ulpcc', 'bin', 'darwin')
-    elif platform.system() == 'Linux':
-        lcc_path = os.path.join(PATHS['ulptool'], 'ulpcc', 'bin', 'linux')
-    elif platform.system() == 'Windows':
-        sys.exit("ulpcc is not supported on Windows")
+
+    # Determine system and set llc path
+    supported_systems = os.listdir(os.path.join(PATHS['ulptool'], 'ulpcc', 'bin'))
+    system_name = platform.system().lower()
+    if system_name not in supported_systems:
+        sys.exit('Unsupported system or OS. Exiting.')
+    lcc_path = os.path.join(PATHS['ulptool'], 'ulpcc', 'bin', system_name.lower())
+
     LCC = []
     LCC.append(lcc_path + '/lcc')
     LCC.append('-I' + soc_path)
