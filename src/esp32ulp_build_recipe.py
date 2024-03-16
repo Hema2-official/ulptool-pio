@@ -348,11 +348,11 @@ def gen_lcc_cmd(PATHS, file):
 
     LCC = []
     LCC.append(lcc_path + '/lcc')
-    LCC.append('-I' + soc_path)
-    LCC.append('-I' + include_path)
-    LCC.append('-I' + header_path)
+    LCC.append('-I "' + soc_path + '"')
+    LCC.append('-I "' + include_path + '"')
+    LCC.append('-I "' + header_path + '"')
     LCC.append('-D_ULPCC_')
-    LCC.append('-lccdir=' + lcc_path)
+    LCC.append('-lccdir="' + lcc_path + '"')
     LCC.append('-Wf-target=ulp')
     LCC.append('-S')
     LCC.append(file)
