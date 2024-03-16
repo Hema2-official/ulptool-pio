@@ -1,9 +1,10 @@
 # Copyright (c) likeablob
 # SPDX-License-Identifier: MIT
-from pathlib import Path
+import os
 import subprocess
 import sys
-import os
+from pathlib import Path
+
 from SCons.Script import COMMAND_LINE_TARGETS, Import
 
 Import("env", "projenv")
@@ -20,10 +21,14 @@ ulptool_dir = Path(env["PROJECT_LIBDEPS_DIR"]) / env["PIOENV"] / "ulptool-pio"
 
 def run_ulptool():
     platform = env.PioPlatform()
-
+    board = env.BoardConfig()
+    mcu = board.get("build.mcu", "esp32")
+    
     framework_dir = platform.get_package_dir("framework-arduinoespressif32")
-    toolchain_ulp_dir = platform.get_package_dir("toolchain-esp32ulp")
-    toolchain_xtensa_dir = platform.get_package_dir("toolchain-xtensa-esp32")
+    toolchain_ulp_dir = platform.get_package_dir("toolchain-%sulp" % (mcu))
+    toolchain_xtensa_dir = platform.get_package_dir(
+        "toolchain-%s" % ("xtensa-%s" % mcu)
+    )
 
     cpp_defines = ""
     for raw in env["CPPDEFINES"]:
@@ -40,44 +45,21 @@ def run_ulptool():
         if k.startswith("ARDUINO"):
             cpp_defines += flag
 
-    cpp_inc_flags = ""
-    prefix = env["INCPREFIX"]
-    suffix = env["INCSUFFIX"]
-
-    for dir in env["CPPPATH"]:
-        path = Path(dir)
-        flag = prefix+str(path).replace("\\", "/")+suffix+";"
-        cpp_inc_flags += flag
-
-    cmd = str(env["PYTHONEXE"]).replace("\\", "/") + ";" + \
-        str(ulptool_dir).replace("\\", "/")+"/src/esp32ulp_build_recipe.py;" + \
-        cpp_inc_flags + \
-        "-b"+str(project_dir).replace("\\", "/") + ";" + \
-        "-p"+str(framework_dir).replace("\\", "/") + ";" + \
-        "-u"+str(toolchain_ulp_dir).replace("\\", "/")+"/bin;" + \
-        "-x"+str(toolchain_xtensa_dir).replace("\\", "/")+"/bin;" + \
-        "-t"+str(ulptool_dir).replace("\\", "/")+"/src/;" + \
-        str(cpp_defines)
-    cmd = cmd.split(";")
-
-    #print()
-    #for part in cmd:
-    #    print(part)
-    #print()
-
-    console_string = ''
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE, shell=False)
-    (out, err) = proc.communicate()
-    print(out)
-    print(err)
-    if err:
-        error_string = cmd[0] + '\r' + err.decode('utf-8')
-        sys.exit(error_string)
-    else:
-        console_string += cmd[0] + '\r'
-    
-    if err:
+    # TODO: Rewrite with process.run()
+    res = env.Execute(
+        f"""$PYTHONEXE \
+         {ulptool_dir}/src/esp32ulp_build_recipe.py \
+         $_CPPINCFLAGS \
+        -b {project_dir} \
+        -p {framework_dir} \
+        -u {toolchain_ulp_dir}/bin \
+        -x {toolchain_xtensa_dir}/bin \
+        -t {ulptool_dir}/src/ \
+        -m {mcu} \
+        {cpp_defines}
+    """
+    )
+    if res:
         raise Exception("An error returned by ulptool.")
 
 
