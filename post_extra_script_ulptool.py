@@ -23,7 +23,7 @@ def run_ulptool():
 
     framework_dir = platform.get_package_dir("framework-arduinoespressif32")
     toolchain_ulp_dir = platform.get_package_dir("toolchain-esp32ulp")
-    toolchain_xtensa_dir = platform.get_package_dir("toolchain-xtensa32")
+    toolchain_xtensa_dir = platform.get_package_dir("toolchain-xtensa-esp32")
 
     cpp_defines = ""
     for raw in env["CPPDEFINES"]:
